@@ -223,7 +223,7 @@ canvas {
   max-height: 100%;
   overflow: auto;
   touch-action: pan-y;
-  padding: 22px 22px 26px;
+  padding: 18px 22px 18px;
   text-align: center;
   background: var(--cream);
   border: 4px solid #fff;
@@ -277,11 +277,11 @@ h1,
 .chip.danger { background: #ffe1e8; color: #b0123d; }
 
 .rules {
-  margin: 16px 0;
+  margin: 14px 0 4px;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 8px;
+  gap: 6px;
   text-align: left;
   font-size: 15px;
   line-height: 1.35;
@@ -291,14 +291,114 @@ h1,
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  padding: 8px 10px;
+  padding: 7px 10px;
   border-radius: 14px;
   background: #fff;
 }
 
 .rules li > span:first-child { font-size: 20px; line-height: 1; }
 
-.best { margin: 0 0 16px; font-weight: 800; }
+.levels {
+  margin: 0 0 12px;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.levels legend {
+  padding: 0;
+  margin: 0 auto 6px;
+  font-weight: 900;
+  font-size: 15px;
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #ffe2bf;
+}
+
+.seg label { position: relative; cursor: pointer; }
+
+.seg input {
+  /* ko'rinmas, lekin klaviatura va ekran o'quvchilar uchun ishlaydi; bosish label orqali */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.seg span {
+  display: block;
+  padding: 8px 4px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 16px;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.seg label:hover span { background: rgba(255, 255, 255, 0.6); }
+
+.seg input:checked + span {
+  color: #fff;
+  background: linear-gradient(180deg, #ffa53a, #ff6b1a);
+  box-shadow: 0 3px 0 var(--orange-dark);
+}
+
+.seg input[value="easy"]:checked + span {
+  background: linear-gradient(180deg, #4fd18b, #2bb673);
+  box-shadow: 0 3px 0 #1d8a55;
+}
+
+.seg input[value="hard"]:checked + span {
+  background: linear-gradient(180deg, #ff6b8b, #e0284f);
+  box-shadow: 0 3px 0 #a3153a;
+}
+
+.seg input:focus-visible + span { outline: 3px solid #2563eb; outline-offset: 2px; }
+
+.level-hint {
+  margin: 6px 0 0;
+  min-height: 1.3em;
+  font-size: 14px;
+  font-weight: 700;
+  color: #a0522d;
+}
+
+.best { margin: 0 0 12px; font-weight: 800; }
+
+/* Kichik ekranda karta aylantirilsa ham «Boshlash» doim ko'rinib turadi */
+.actions {
+  position: sticky;
+  bottom: 0;
+  margin: 0 -22px -18px;
+  padding: 10px 22px 18px;
+  background: linear-gradient(rgba(255, 248, 236, 0), var(--cream) 14px);
+}
+
+.level-tag { margin: 6px 0 0; font-weight: 800; color: #a0522d; }
+
+.link-btn {
+  display: block;
+  margin: 14px auto 0;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 800;
+  color: #a0522d;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.link-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; border-radius: 8px; }
 
 .record {
   margin: 10px 0 0;
@@ -407,11 +507,21 @@ h1,
   .order li .em { font-size: 20px; }
   .order li.done .em { filter: grayscale(0.6); }
 
-  h1 { font-size: 40px; }
   .screen-title { font-size: 32px; }
-  .hero { font-size: 52px; }
-  .card { padding: 18px 14px 22px; border-radius: 24px; }
-  .rules { font-size: 14px; }
+  .card { padding: 16px 14px 18px; border-radius: 24px; }
+  .actions { margin: 0 -14px -18px; padding: 8px 14px 18px; }
+  .hero { font-size: 44px; }
+  h1 { font-size: 36px; }
+  .tagline { margin: 4px 0 10px; font-size: 14px; }
+  .legend { gap: 4px; }
+  .chip { font-size: 12px; padding: 3px 8px; }
+  .rules { font-size: 13px; gap: 5px; margin: 12px 0 2px; }
+  .rules li { padding: 6px 8px; gap: 8px; }
+  .rules li > span:first-child { font-size: 17px; }
+  .levels legend { font-size: 14px; }
+  .seg span { font-size: 15px; padding: 7px 2px; }
+  .level-hint { font-size: 13px; }
+  .big-btn { font-size: 20px; padding: 12px 32px; }
 }
 
 @media (max-width: 360px) {
@@ -420,7 +530,7 @@ h1,
 
 @media (max-height: 560px) {
   .hero { display: none; }
-  .rules { gap: 4px; margin: 10px 0; }
+  .rules { gap: 4px; margin: 10px 0 2px; }
   .rules li { padding: 5px 8px; }
   .order { top: calc(var(--safe-top) + 54px); padding: 6px 8px 8px; }
   .order h2 { font-size: 13px; margin-bottom: 3px; }

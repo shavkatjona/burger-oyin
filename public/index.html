@@ -53,8 +53,19 @@
           <li><span>⏱️</span><span>Vaqt — <b>60 soniya</b>. Omad!</span></li>
         </ul>
 
-        <p class="best">🏆 Eng yaxshi natija: <b id="bestStart">0</b></p>
-        <button class="big-btn" id="startBtn" type="button">▶ Boshlash</button>
+        <div class="actions">
+          <fieldset class="levels">
+            <legend>Qiyinlik darajasi</legend>
+            <div class="seg">
+              <label><input type="radio" name="level" value="easy"><span>🙂 Oson</span></label>
+              <label><input type="radio" name="level" value="medium" checked><span>😎 Oʻrta</span></label>
+              <label><input type="radio" name="level" value="hard"><span>🔥 Qiyin</span></label>
+            </div>
+            <p class="level-hint" id="levelHint">Oʻrtacha tezlik, qalampir baʼzan uchraydi.</p>
+          </fieldset>
+          <p class="best">🏆 Eng yaxshi natija (<span id="bestLevel">Oʻrta</span>): <b id="bestStart">0</b></p>
+          <button class="big-btn" id="startBtn" type="button">▶ Boshlash</button>
+        </div>
       </div>
     </section>
 
@@ -71,6 +82,7 @@
       <div class="card">
         <div class="hero" aria-hidden="true" id="overEmoji">⏰</div>
         <h2 class="screen-title" id="overTitle">Vaqt tugadi!</h2>
+        <p class="level-tag">Daraja: <b id="overLevel">Oʻrta</b></p>
         <p class="record hidden" id="newRecord">🎉 Yangi rekord! 🎉</p>
         <div class="stats">
           <div class="stat"><span class="stat-label">Natija</span><b id="finalScore">0</b></div>
@@ -78,6 +90,7 @@
           <div class="stat"><span class="stat-label">Eng yaxshi</span><b id="bestOver">0</b></div>
         </div>
         <button class="big-btn" id="restartBtn" type="button">🔄 Qayta oʻynash</button>
+        <button class="link-btn" id="menuBtn" type="button">⚙️ Darajani almashtirish</button>
       </div>
     </section>
 

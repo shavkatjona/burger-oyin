@@ -12,7 +12,19 @@ Server kerak emas — oddiy HTML, CSS va JavaScript. Kompyuterda ham, telefonda 
 - Notoʻgʻri masalliq yoki qalampir ushlansa — **bitta jon kamayadi**. Jonlar 3 ta.
 - Oʻyin **60 soniya** davom etadi (yoki jonlar tugaguncha). Vaqt oʻtgan sari masalliqlar tezroq tushadi.
 - Tutilmagan masalliq uchun jarima yoʻq.
-- **Eng yaxshi natija** brauzerda (`localStorage`) saqlanadi.
+- **Eng yaxshi natija** brauzerda (`localStorage`) saqlanadi — har bir qiyinlik darajasi uchun alohida.
+
+## Qiyinlik darajalari
+
+Daraja boshlash ekranida tanlanadi va brauzer uni eslab qoladi. Natija ekranidagi «Darajani almashtirish» tugmasi boshlash ekraniga qaytaradi.
+
+| Daraja      | Tushish tezligi | Masalliqlar orasidagi vaqt | Qalampir ehtimoli |
+|-------------|-----------------|----------------------------|-------------------|
+| 🙂 Oson     | eng sekin       | 1,05 → 0,65 soniya         | 5% → 12%          |
+| 😎 Oʻrta    | oʻrtacha        | 0,95 → 0,5 soniya          | 10% → 22%         |
+| 🔥 Qiyin    | eng tez (~1,4×) | 0,8 → 0,42 soniya          | 20% → 34%         |
+
+Har bir darajada oʻyin boshidan oxirigacha masalliqlar asta-sekin tezlashadi. Raqamlar `public/game.js` dagi `LEVELS` obyektida, ularni oʻzgartirib muvozanatni sozlash mumkin.
 
 ## Boshqaruv
 

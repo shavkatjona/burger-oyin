@@ -9,6 +9,7 @@
   const BONUS_PER_LAYER = 10;
   const BEST_KEY = 'burger-yig:best';
   const SOUND_KEY = 'burger-yig:sound';
+  const LEVEL_KEY = 'burger-yig:level';
   const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif';
   const TEXT_FONT = 'Nunito,"Baloo 2",ui-rounded,"Segoe UI",system-ui,-apple-system,Roboto,sans-serif';
 
@@ -20,6 +21,25 @@
     tomato: { name: 'Pomidor', emoji: '🍅' },
     pepper: { name: 'Qalampir', emoji: '🌶️' },
   };
+  // Qiyinlik darajalari: [boshida, oxirida] qiymatlar, o'yin davomida silliq o'zgaradi.
+  // speed — tushish tezligi (ekran balandligi/soniya), spawn — masalliqlar orasidagi soniyalar,
+  // pepper — qalampir ehtimoli, need — kerakli masalliq tushish ehtimoli.
+  // O'rta daraja avvalgi kalitni saqlaydi, shunda eski rekordlar yo'qolmaydi.
+  const LEVELS = {
+    easy: {
+      name: 'Oson', speed: [0.22, 0.4], spawn: [1.05, 0.65], pepper: [0.05, 0.12], need: 0.5,
+      bestKey: 'burger-yig:best:easy', hint: 'Masalliqlar sekin tushadi, qalampir kam.',
+    },
+    medium: {
+      name: 'Oʻrta', speed: [0.3, 0.55], spawn: [0.95, 0.5], pepper: [0.1, 0.22], need: 0.42,
+      bestKey: BEST_KEY, hint: 'Oʻrtacha tezlik, qalampir baʼzan uchraydi.',
+    },
+    hard: {
+      name: 'Qiyin', speed: [0.42, 0.78], spawn: [0.8, 0.42], pepper: [0.2, 0.34], need: 0.38,
+      bestKey: 'burger-yig:best:hard', hint: 'Masalliqlar tez tushadi, qalampir koʻp! 🌶️',
+    },
+  };
+
   const FILLINGS = ['patty', 'cheese', 'lettuce', 'tomato'];
   const FOODS = ['bun', ...FILLINGS];
 
@@ -48,6 +68,11 @@
     resumeBtn: $('resumeBtn'),
     restartBtn: $('restartBtn'),
     bestStart: $('bestStart'),
+    bestLevel: $('bestLevel'),
+    levelInputs: document.querySelectorAll('input[name="level"]'),
+    levelHint: $('levelHint'),
+    overLevel: $('overLevel'),
+    menuBtn: $('menuBtn'),
     bestOver: $('bestOver'),
     finalScore: $('finalScore'),
     finalBurgers: $('finalBurgers'),
@@ -101,7 +126,8 @@
     plateX: 0,
     targetX: null,
     keys: { left: false, right: false },
-    best: Number(storage.get(BEST_KEY)) || 0,
+    level: LEVELS[storage.get(LEVEL_KEY)] ? storage.get(LEVEL_KEY) : 'medium',
+    best: 0,
     sound: storage.get(SOUND_KEY) !== 'off',
   };
 
@@ -238,6 +264,19 @@
     if (on) unlockAudio();
   }
 
+  // ---------- Qiyinlik ----------
+
+  function setLevel(level) {
+    if (!LEVELS[level]) return;
+    state.level = level;
+    storage.set(LEVEL_KEY, level);
+    state.best = Number(storage.get(LEVELS[level].bestKey)) || 0;
+    ui.levelInputs.forEach((input) => { input.checked = input.value === level; });
+    ui.levelHint.textContent = LEVELS[level].hint;
+    ui.bestLevel.textContent = LEVELS[level].name;
+    ui.bestStart.textContent = state.best;
+  }
+
   // ---------- O'yin oqimi ----------
 
   function showScreen(name) {
@@ -272,6 +311,16 @@
     ui.pauseBtn.disabled = false;
   }
 
+  function backToMenu() {
+    if (state.mode !== 'over') return;
+    state.mode = 'menu';
+    state.items = [];
+    state.stack = [];
+    setLevel(state.level);
+    showScreen('start');
+    ui.startBtn.focus({ preventScroll: true });
+  }
+
   function pauseGame() {
     if (state.mode !== 'playing') return;
     state.mode = 'paused';
@@ -293,7 +342,7 @@
     const isRecord = state.score > state.best;
     if (isRecord) {
       state.best = state.score;
-      storage.set(BEST_KEY, state.best);
+      storage.set(LEVELS[state.level].bestKey, state.best);
     }
     renderHud(true);
     ui.timePill.classList.remove('warn');
@@ -303,6 +352,7 @@
     ui.overTitle.textContent = reason === 'lives' ? 'Jonlar tugadi!' : 'Vaqt tugadi!';
     ui.finalScore.textContent = state.score;
     ui.finalBurgers.textContent = state.burgers;
+    ui.overLevel.textContent = LEVELS[state.level].name;
     ui.bestOver.textContent = state.best;
     ui.bestStart.textContent = state.best;
     ui.newRecord.classList.toggle('hidden', !(isRecord && state.score > 0));
@@ -328,12 +378,13 @@
 
   function spawnItem() {
     const d = difficulty();
+    const level = LEVELS[state.level];
     const need = state.order[state.step];
-    const pepperChance = lerp(0.1, 0.22, d);
+    const pepperChance = lerp(level.pepper[0], level.pepper[1], d);
     const r = Math.random();
     let type;
     if (r < pepperChance) type = 'pepper';
-    else if (r < pepperChance + 0.42) type = need;
+    else if (r < pepperChance + level.need) type = need;
     else type = pick(FOODS.filter((t) => t !== need));
 
     const size = view.itemSize;
@@ -348,7 +399,7 @@
       type,
       x,
       y: -size,
-      vy: H * lerp(0.3, 0.55, d) * rand(0.85, 1.15),
+      vy: H * lerp(level.speed[0], level.speed[1], d) * rand(0.85, 1.15),
       rot: rand(-0.4, 0.4),
       vr: rand(-1.6, 1.6),
       size,
@@ -463,7 +514,8 @@
     state.spawnTimer -= dt;
     if (state.spawnTimer <= 0) {
       spawnItem();
-      state.spawnTimer = lerp(0.95, 0.5, difficulty()) * rand(0.8, 1.2);
+      const { spawn } = LEVELS[state.level];
+      state.spawnTimer = lerp(spawn[0], spawn[1], difficulty()) * rand(0.8, 1.2);
     }
 
     // Tushayotgan masalliqlar va ushlash
@@ -837,11 +889,10 @@
   const RIGHT_KEYS = ['ArrowRight', 'd', 'D', 'в', 'В'];
 
   window.addEventListener('keydown', (e) => {
-    if (LEFT_KEYS.includes(e.key)) {
-      state.keys.left = true;
-      e.preventDefault();
-    } else if (RIGHT_KEYS.includes(e.key)) {
-      state.keys.right = true;
+    if (LEFT_KEYS.includes(e.key) || RIGHT_KEYS.includes(e.key)) {
+      // Menyuda strelkalar daraja tugmalari orasida yuradi
+      if (state.mode !== 'playing') return;
+      state.keys[LEFT_KEYS.includes(e.key) ? 'left' : 'right'] = true;
       e.preventDefault();
     } else if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
       if (state.mode === 'playing') pauseGame();
@@ -849,6 +900,7 @@
     } else if (e.key === 'Enter' || e.key === ' ') {
       // Fokusdagi tugma o'zi ishlaydi
       if (e.target instanceof HTMLButtonElement) return;
+      if (e.key === ' ' && e.target instanceof HTMLInputElement) return;
       e.preventDefault();
       if (state.mode === 'menu') startGame();
       else if (state.mode === 'over' && !ui.restartBtn.disabled && !ui.overScreen.classList.contains('hidden')) startGame();
@@ -864,6 +916,8 @@
   ui.startBtn.addEventListener('click', startGame);
   ui.restartBtn.addEventListener('click', startGame);
   ui.resumeBtn.addEventListener('click', resumeGame);
+  ui.menuBtn.addEventListener('click', backToMenu);
+  ui.levelInputs.forEach((input) => input.addEventListener('change', () => setLevel(input.value)));
   ui.pauseBtn.addEventListener('click', () => (state.mode === 'playing' ? pauseGame() : resumeGame()));
   ui.soundBtn.addEventListener('click', () => setSound(!state.sound));
 
@@ -883,7 +937,7 @@
 
   resize();
   setSound(state.sound);
-  ui.bestStart.textContent = state.best;
+  setLevel(state.level);
   ui.pauseBtn.disabled = true;
   state.order = makeOrder(0);
   renderOrder();
@@ -892,6 +946,6 @@
 
   // Sinov uchun: ?debug manzili bilan ichki holatga kirish mumkin.
   if (/[?&]debug\b/.test(location.search)) {
-    window.__burger = { state, view, startGame, endGame, pauseGame, resumeGame, newOrder };
+    window.__burger = { state, view, LEVELS, startGame, endGame, pauseGame, resumeGame, newOrder, setLevel };
   }
 })();
