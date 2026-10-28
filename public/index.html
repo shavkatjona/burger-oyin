@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ffb347">
+  <meta name="description" content="Burger yigʻ — yuqoridan tushayotgan masalliqlarni tutib, buyurtma boʻyicha burger yigʻadigan quvnoq brauzer oʻyini.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Burger yigʻ</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <canvas id="game" aria-label="Oʻyin maydoni"></canvas>
+
+    <header class="hud" id="hud">
+      <div class="pill" title="Ochko">⭐ <span id="score">0</span></div>
+      <div class="pill" id="timePill" title="Qolgan vaqt">⏱️ <span id="time">60</span></div>
+      <div class="pill lives" id="lives" title="Jonlar">❤️❤️❤️</div>
+      <div class="hud-buttons">
+        <button class="icon-btn" id="pauseBtn" type="button" aria-label="Pauza">⏸️</button>
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Ovozni oʻchirish">🔊</button>
+      </div>
+    </header>
+
+    <aside class="order" id="order" aria-live="polite">
+      <h2><span class="order-icon">📋</span><span class="order-title"> Buyurtma <span id="orderNo">#1</span></span></h2>
+      <ol id="orderList"></ol>
+    </aside>
+
+    <section class="screen" id="startScreen">
+      <div class="card">
+        <div class="hero" aria-hidden="true">🍔</div>
+        <h1>Burger yigʻ</h1>
+        <p class="tagline">Tez-tez, mazali-mazali!</p>
+
+        <div class="legend" aria-label="Masalliqlar">
+          <span class="chip">🍞 Non</span>
+          <span class="chip">🥩 Kotlet</span>
+          <span class="chip">🧀 Pishloq</span>
+          <span class="chip">🥬 Salat</span>
+          <span class="chip">🍅 Pomidor</span>
+          <span class="chip danger">🌶️ Qalampir</span>
+        </div>
+
+        <ul class="rules">
+          <li><span>🍽️</span><span>Tarelkani <b>sichqoncha</b>, <b>← →</b> strelkalar yoki <b>barmoq</b> bilan suring.</span></li>
+          <li><span>📋</span><span>Buyurtma kartasidagi masalliqlarni <b>koʻrsatilgan tartibda</b> tuting.</span></li>
+          <li><span>✅</span><span>Burger toʻliq yigʻilsa — <b>bonus ochko</b> va yangi buyurtma.</span></li>
+          <li><span>💔</span><span>Notoʻgʻri masalliq yoki 🌶️ qalampir — <b>bitta jon</b> ketadi. Jonlar 3 ta.</span></li>
+          <li><span>⏱️</span><span>Vaqt — <b>60 soniya</b>. Omad!</span></li>
+        </ul>
+
+        <p class="best">🏆 Eng yaxshi natija: <b id="bestStart">0</b></p>
+        <button class="big-btn" id="startBtn" type="button">▶ Boshlash</button>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="pauseScreen">
+      <div class="card small">
+        <div class="hero" aria-hidden="true">☕</div>
+        <h2 class="screen-title">Pauza</h2>
+        <p>Dam oling, burger kutib turadi.</p>
+        <button class="big-btn" id="resumeBtn" type="button">▶ Davom etish</button>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="overScreen">
+      <div class="card">
+        <div class="hero" aria-hidden="true" id="overEmoji">⏰</div>
+        <h2 class="screen-title" id="overTitle">Vaqt tugadi!</h2>
+        <p class="record hidden" id="newRecord">🎉 Yangi rekord! 🎉</p>
+        <div class="stats">
+          <div class="stat"><span class="stat-label">Natija</span><b id="finalScore">0</b></div>
+          <div class="stat"><span class="stat-label">Burgerlar</span><b id="finalBurgers">0</b></div>
+          <div class="stat"><span class="stat-label">Eng yaxshi</span><b id="bestOver">0</b></div>
+        </div>
+        <button class="big-btn" id="restartBtn" type="button">🔄 Qayta oʻynash</button>
+      </div>
+    </section>
+
+    <div id="safeProbe" aria-hidden="true"></div>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
